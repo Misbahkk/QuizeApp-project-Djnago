@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from datetime import datetime,timedelta
 
 class User(AbstractUser):
     name =  models.CharField(max_length=255)
@@ -15,3 +16,7 @@ class User(AbstractUser):
     ]
     
     role = models.CharField(max_length=7, choices=ROLE_CHOICES, default='student')
+    
+      # Password reset fields
+    reset_token = models.CharField(max_length=30, null=True, blank=True)
+    reset_token_expiry = models.DateTimeField(null=True, blank=True)
