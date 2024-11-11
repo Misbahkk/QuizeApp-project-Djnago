@@ -143,3 +143,11 @@ AUTH_USER_MODEL = 'quizzApp.User'
 
 CORS_ORIGINS_ALLOW_ALL =True
 CORS_ALLOW_CREDENTIALS = True
+
+
+
+
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
