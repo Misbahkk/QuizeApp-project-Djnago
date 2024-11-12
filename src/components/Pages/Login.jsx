@@ -3,17 +3,37 @@ import { NavLink } from "react-router-dom";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({
-    userName: "",
+    email: "",
     password: "",
   });
-  const { userName, password } = loginData;
+  const { email, password } = loginData;
   const onChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
-  const submitData = (e) => {
+
+  const submitData =async (e) => {
     e.preventDefault();
-    console.log(loginData);
-  };
+    const formData = new FormData(e.target);
+    const data_user = {
+        email: formData.get('email'),  // Ensure this matches the backend
+        password: formData.get('password'),
+    };
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data_user),
+      });
+      const data = await response.json();
+      console.log("Login Success:", data);
+      // Handle response data (e.g., save token, redirect user, etc.)
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+    
+  };
   return (
     <div>
       <div className="w-full h-[88.5vh] bg-black">
@@ -30,11 +50,11 @@ const Login = () => {
             >
               <i className="fa-regular fa-user ml-2"></i>
               <input
-                name="userName"
-                value={userName}
+                name="email"
+                value={email}
                 onChange={onChange}
-                type="text"
-                placeholder="Username"
+                type="email"
+                placeholder="email"
                 className=" text-black pr-40 pl-2 py-1 font-sans text-sm focus:outline-none focus:border-none  placeholder:text-black"
                 style={{ backgroundColor: "#CCBEBE" }}
               />
