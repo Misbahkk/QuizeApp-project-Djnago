@@ -55,14 +55,18 @@ const Login = () => {
                 style={{ backgroundColor: "#CCBEBE" }}
               />
             </div>
-            <NavLink
-              to="/signup"
-              className={({ isActive }) =>
-                isActive ? "text-red-600" : "text-white"
-              }
-            >
-              <p className=" font-sans text-end mb-2">Create an account</p>
-            </NavLink>
+            <div className="flex items-center justify-between">
+              <NavLink to="/forgotPassword">
+                <p className=" font-sans text-end mb-2 text-red-600">
+                  Forgot Password ?
+                </p>
+              </NavLink>
+              <NavLink to="/signup">
+                <p className=" font-sans text-end mb-2 text-red-600">
+                  Create an account
+                </p>
+              </NavLink>
+            </div>
 
             <button
               className="flex text-white px-12 py-3 rounded-lg m-auto text-lg font-semibold"

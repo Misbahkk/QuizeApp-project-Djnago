@@ -36,6 +36,7 @@ const SignUp = () => {
               placeholder="Username"
               className=" text-black pr-40 pl-2 py-1 font-sans text-sm focus:outline-none focus:border-none  placeholder:text-black"
               style={{ backgroundColor: "#CCBEBE" }}
+              required
             />
           </div>
           <div
@@ -51,6 +52,7 @@ const SignUp = () => {
               placeholder="Email"
               className=" text-black pr-40 pl-2 py-1 font-sans text-sm focus:outline-none focus:border-none placeholder:text-black"
               style={{ backgroundColor: "#CCBEBE" }}
+              required
             />
           </div>
           <div
@@ -66,6 +68,7 @@ const SignUp = () => {
               placeholder="Password"
               className=" text-black pr-40 pl-2 py-1  font-sans text-sm focus:outline-none focus:border-none placeholder:text-black"
               style={{ backgroundColor: "#CCBEBE" }}
+              required
             />
           </div>
           <div
@@ -83,6 +86,7 @@ const SignUp = () => {
               onChange={onChange}
               style={{ backgroundColor: "#CCBEBE" }}
               className="  text-black pl-7 pr-40 py-1 font-sans text-sm placeholder:text-black w-full appearance-none rounded-lg focus:outline-none focus:border-none"
+              required
             >
               <option disabled selected>
                 Choose your role

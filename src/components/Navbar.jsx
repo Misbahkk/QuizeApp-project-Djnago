@@ -1,8 +1,13 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import "../App.css";
 
 const Navbar = () => {
+  const location = useLocation();
+  const isAuthPage =
+    location.pathname === "/login" ||
+    location.pathname === "/signup" ||
+    location.pathname === "/forgotPassword";
   return (
     <div className="nav-div bg-black text-white flex items-center justify-evenly text-center py-4">
       <div className="text-3xl">Logo</div>
@@ -15,14 +20,14 @@ const Navbar = () => {
         >
           Home
         </NavLink>
+
         <NavLink
           to="/login"
-          className={({ isActive }) =>
-            isActive ? "text-red-600" : "text-white"
-          }
+          className={isAuthPage ? "text-red-600" : "text-white"}
         >
           Login/Sign Up
         </NavLink>
+
         <NavLink
           to="/about"
           className={({ isActive }) =>
