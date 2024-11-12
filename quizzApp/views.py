@@ -6,9 +6,9 @@ from rest_framework.views import APIView
 from rest_framework.views import Response
 # from django.contrib.auth.hashers import check_password
 from rest_framework.exceptions import AuthenticationFailed
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth.tokens import default_token_generator
+# from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+# from django.utils.encoding import force_bytes, force_str
+# from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import UserSerializer
 from .models import User
@@ -17,6 +17,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from .generate_quiz import generate_quiz_questions, get_suggestions, load_user_inputs, save_user_inputs,extract_mcqs,extract_suggested_qs
 
 
 class registerView(APIView):
@@ -28,57 +29,57 @@ class registerView(APIView):
     
 
 
-class LoginView(APIView):
-    def post(self,request):
-        email = request.data['email']
-        password = request.data['password']
+# class LoginView(APIView):
+#     def post(self,request):
+#         email = request.data['email']
+#         password = request.data['password']
 
-        user = User.objects.filter(email=email).first()
+#         user = User.objects.filter(email=email).first()
 
-        if user is None:
-            raise AuthenticationFailed('User Not Found')
+#         if user is None:
+#             raise AuthenticationFailed('User Not Found')
         
-        if not user.check_password(password):
-            raise AuthenticationFailed('Incorrect Password')
+#         if not user.check_password(password):
+#             raise AuthenticationFailed('Incorrect Password')
         
 
-        payload ={
-            'id':user.id,
-            'exp':datetime.datetime.utcnow()+datetime.timedelta(minutes=60),
-            'iat': datetime.datetime.utcnow()
-        }
+#         payload ={
+#             'id':user.id,
+#             'exp':datetime.datetime.utcnow()+datetime.timedelta(minutes=60),
+#             'iat': datetime.datetime.utcnow()
+#         }
 
-        token = jwt.encode(payload,'secret',algorithm='HS256').decode('utf-8')
+#         token = jwt.encode(payload,'secret',algorithm='HS256').decode('utf-8')
 
-        response = Response()
+#         response = Response()
 
-        response.set_cookie(key='jwt',value =token,httponly=True)
-        response.data={
-            'jwt':token
-        }
+#         response.set_cookie(key='jwt',value =token,httponly=True)
+#         response.data={
+#             'jwt':token
+#         }
      
         
-        return response
+#         return response
     
 
-# class LoginView(TokenObtainPairView):
-#     def post(self, request, *args, **kwargs):
-#         response = super().post(request, *args, **kwargs)
-#         # Optional: Set access token in the cookie
-#        
-#         response.set_cookie(
-#             key='access',
-#             value=response.data['access'],
-#             httponly=True,
-#             samesite='Lax'
-#         )
-#         response.set_cookie(
-#             key='refresh',
-#             value=response.data['refresh'],
-#             httponly=True,
-#             samesite='Lax'
-#         )
-#         return response
+class LoginView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        # Optional: Set access token in the cookie
+       
+        response.set_cookie(
+            key='access',
+            value=response.data['access'],
+            httponly=True,
+            samesite='Lax'
+        )
+        response.set_cookie(
+            key='refresh',
+            value=response.data['refresh'],
+            httponly=True,
+            samesite='Lax'
+        )
+        return response
 
 
 class UserView(APIView):
@@ -215,78 +216,131 @@ class PasswordResetConfirmView(APIView):
 
 
 
-class ChangePasswordView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-
-    def post(self, request):
-        # Extract JWT from the Authorization header
-        token = request.COOKIES.get('jwt')  # Assuming token is stored in cookies
-
-        if not token:
-            return Response({"error": "Authentication credentials were not provided."}, status=401)
-
-        try:
-            # Decode the token and validate it manually
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            return Response({"error": "Token has expired. Please log in again."}, status=401)
-        except jwt.InvalidTokenError:
-            return Response({"error": "Invalid token. Please log in again."}, status=401)
-
-        # Now that the token is valid, get the user from the payload
-        user = User.objects.filter(id=payload['id']).first()
-        
-        if user is None:
-            return Response({"error": "User not found."}, status=401)
-
-        # Now, process password change
-        old_password = request.data.get('old_password')
-        new_password = request.data.get('new_password')
-
-        if not user.check_password(old_password):
-            return Response({"error": "Old password is incorrect."}, status=400)
-
-        if old_password == new_password:
-            return Response({"error": "New password must be different from the old password."}, status=400)
-
-        # Update the password
-        user.set_password(new_password)
-        user.save()
-
-        # Optionally, you may want to update the session after password change
-        update_session_auth_hash(request, user)
-
-        return Response({"message": "Password updated successfully."}, status=200)
-    
-
-
-
 # class ChangePasswordView(APIView):
-#     permission_classes = [IsAuthenticated]  # Only allows authenticated users
-#     authentication_classes = [JWTAuthentication]  # Uses JWT authentication
+#     permission_classes = [IsAuthenticated]
+#     authentication_classes = [JWTAuthentication]
 
 #     def post(self, request):
-#         user = request.user  # Get the currently authenticated user directly
+#         # Extract JWT from the Authorization header
+#         token = request.COOKIES.get('jwt')  # Assuming token is stored in cookies
 
-#         # Extract the old and new passwords from the request data
+#         if not token:
+#             return Response({"error": "Authentication credentials were not provided."}, status=401)
+
+#         try:
+#             # Decode the token and validate it manually
+#             payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+#         except jwt.ExpiredSignatureError:
+#             return Response({"error": "Token has expired. Please log in again."}, status=401)
+#         except jwt.InvalidTokenError:
+#             return Response({"error": "Invalid token. Please log in again."}, status=401)
+
+#         # Now that the token is valid, get the user from the payload
+#         user = User.objects.filter(id=payload['id']).first()
+        
+#         if user is None:
+#             return Response({"error": "User not found."}, status=401)
+
+#         # Now, process password change
 #         old_password = request.data.get('old_password')
 #         new_password = request.data.get('new_password')
 
-#         # Check if the old password is correct
 #         if not user.check_password(old_password):
-#             return Response({"error": "Old password is incorrect."}, status=status.HTTP_400_BAD_REQUEST)
+#             return Response({"error": "Old password is incorrect."}, status=400)
 
-#         # Validate that the new password is different from the old password
-#         if not new_password or old_password == new_password:
-#             return Response({"error": "New password must be provided and different from the old password."},
-#                             status=status.HTTP_400_BAD_REQUEST)
+#         if old_password == new_password:
+#             return Response({"error": "New password must be different from the old password."}, status=400)
 
 #         # Update the password
 #         user.set_password(new_password)
 #         user.save()
 
-#         # Update session authentication hash to keep the user logged in
+#         # Optionally, you may want to update the session after password change
 #         update_session_auth_hash(request, user)
 
-#         return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
+#         return Response({"message": "Password updated successfully."}, status=200)
+    
+
+
+
+
+
+
+
+
+
+
+#TODO: Quize genration
+
+class QuizAndSuggestionView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request):
+        # Prompt input
+        token = request.COOKIES.get('jwt')
+        prompt = request.data.get('prompt')
+        
+        if not prompt:
+            return Response({"error": "Prompt is required"}, status=400)
+
+        # Load previous user inputs and add new prompt
+        user_inputs = load_user_inputs()
+        user_inputs.append({"text": prompt})
+        save_user_inputs(user_inputs)
+
+        # Generate Quiz and Suggestions
+        quiz_questions = generate_quiz_questions(prompt)
+        suggestions = get_suggestions(user_inputs)
+
+        mcqs = extract_mcqs(quiz_questions)
+        suggest_q = extract_suggested_qs(suggestions)
+
+        mcq_question = [f"{q}" for q in mcqs]
+        segetion_question = [f"{q}" for q in suggest_q]
+
+        # Send response
+        return Response({
+            "quiz_questions": mcq_question,
+            "suggestions": segetion_question,
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]  # Only allows authenticated users
+    authentication_classes = [JWTAuthentication]  # Uses JWT authentication
+
+    def post(self, request):
+        user = request.user  # Get the currently authenticated user directly
+
+        # Extract the old and new passwords from the request data
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        # Check if the old password is correct
+        if not user.check_password(old_password):
+            return Response({"error": "Old password is incorrect."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate that the new password is different from the old password
+        if not new_password or old_password == new_password:
+            return Response({"error": "New password must be provided and different from the old password."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Update the password
+        user.set_password(new_password)
+        user.save()
+
+        # Update session authentication hash to keep the user logged in
+        update_session_auth_hash(request, user)
+
+        return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
