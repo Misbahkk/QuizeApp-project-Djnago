@@ -2,19 +2,49 @@ import React, { useState } from "react";
 
 const SignUp = () => {
   const [signUpdata, setSignUpdata] = useState({
-    userName: "",
+    name: "",
     email: "",
     password: "",
     role: "",
   });
-  const { userName, email, password, role } = signUpdata;
+  const { name, email, password, role } = signUpdata;
   const onChange = (e) => {
     setSignUpdata({ ...signUpdata, [e.target.name]: e.target.value });
   };
-  const submitData = (e) => {
+  // const submitData = (e) => {
+  //   e.preventDefault();
+  //   console.log(signUpdata);
+  // };
+
+
+
+
+  const submitData = async (e) => {
     e.preventDefault();
-    console.log(signUpdata);
+    const formData = new FormData(e.target);
+    const data_user = {
+      name: formData.get('name'), 
+      email: formData.get('email'),  // Ensure this matches the backend
+      password: formData.get('password'),
+      role: formData.get('role'), 
   };
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data_user),
+      });
+      const data = await response.json();
+      console.log("Signup Success:", data);
+      // Handle response data (e.g., redirect to login, show success message, etc.)
+    } catch (error) {
+      console.error("Error during signup:", error);
+    }
+  };
+
+
   return (
     <div className="w-full h-[88.5vh] bg-black">
       <div className=" flex flex-col w-fit items-center justify-center m-auto px-5 text-white bg-black pt-10">
@@ -29,11 +59,11 @@ const SignUp = () => {
           >
             <i className="fa-regular fa-user ml-2"></i>
             <input
-              name="userName"
-              value={userName}
+              name="name"
+              value={name}
               onChange={onChange}
               type="text"
-              placeholder="Username"
+              placeholder="name"
               className=" text-black pr-40 pl-2 py-1 font-sans text-sm focus:outline-none focus:border-none  placeholder:text-black"
               style={{ backgroundColor: "#CCBEBE" }}
               required
