@@ -18,7 +18,8 @@ from django.utils import timezone
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .generate_quiz import generate_quiz_questions, get_suggestions, load_user_inputs, save_user_inputs,extract_mcqs,extract_suggested_qs
-
+from django.conf import settings
+# from ..backendquize.settings import EMAIL_HOST_PASSWORD
 
 class registerView(APIView):
     def post(self,request):
@@ -120,19 +121,16 @@ class PasswordResetRequestView(APIView):
     def post(self, request):
         email = request.data.get('email')
         user = User.objects.filter(email=email).first()
-
         if user is None:
             return Response({'error': 'User with this email does not exist'}, status=404)
-
         # Generate and save OTP
         user.set_otp()
         OTP= user.otp_code
-
         # Send OTP via email
         send_mail(
             'Your Password Reset OTP',
             f'Your OTP code is: {OTP}',
-            'your_email@example.com',
+            settings.EMAIL_HOST_PASSWORD,
             [user.email],
             fail_silently=False,
         )
@@ -140,28 +138,37 @@ class PasswordResetRequestView(APIView):
 
         return Response({'message': 'OTP sent to your email.'})
 
+
+
 class PasswordResetConfirmView(APIView):
     def post(self, request):
-        email = request.data.get('email')
+        # email = request.data.get('email')
         otp_code = request.data.get('otp_code')
         new_password = request.data.get('password')
+        confirm_password = request.data.get('confirm_password')
 
-        user = User.objects.filter(email=email, otp_code=otp_code).first()
+        if not otp_code or not new_password or not confirm_password:
+            return Response({'error':"OTP , password , confirm password is required.. "},status=200)
+        
+        if new_password != confirm_password:
+            return Response({'eror':'password or confirm password does not match'},status=400)
 
-        # Check if the user exists and OTP is valid
+        user = User.objects.filter(otp_code=otp_code).first()
+
         if user is None or user.otp_expiry < timezone.now():
-            return Response({'error': 'Invalid or expired OTP code.'}, status=400)
+            return Response({'error':"Invalid or Expire OTP"},status=400)
 
-        # Set the new password
-        if new_password:
-            user.set_password(new_password)
-            # Clear OTP fields after successful reset
-            user.otp_code = None
-            user.otp_expiry = None
-            user.save()
-            return Response({'message': 'Password has been reset successfully.'})
+  
 
-        return Response({'error': 'Password is required'}, status=400)
+      
+        user.set_password(new_password)
+        # Clear OTP fields after successful reset
+        user.otp_code = None
+        user.otp_expiry = None
+        user.save()
+        return Response({'message': 'Password has been reset successfully.'})
+
+        
 
 
 
@@ -273,10 +280,13 @@ class PasswordResetConfirmView(APIView):
 #TODO: Quize genration
 
 class QuizAndSuggestionView(APIView):
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def post(self, request):
+        print("Request body:", request.body)  # Raw body
+        print("Request data:", request.data)  # Parsed data
         # Prompt input
         token = request.COOKIES.get('jwt')
         prompt = request.data.get('prompt')

@@ -31,13 +31,18 @@ model = genai.GenerativeModel(
 def load_user_inputs():
     try:
         with open("user_inputs.json", "r") as file:
-            return json.load(file)
+            data = file.read()
+            return json.load(file) if data.strip() else []
     except FileNotFoundError:
+        return []
+    except json.JSONDecodeError:
+        # Handle invalid JSON format
+        print("Invalid JSON in user_inputs.json. Returning an empty list.")
         return []
 
 def save_user_inputs(user_inputs):
     with open("user_inputs.json", "w") as file:
-        json.dump(user_inputs, file)
+        json.dump(user_inputs or [], file)
 
 # Generate Quiz Questions
 def generate_quiz_questions(topic):
