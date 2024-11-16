@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [forgotPass, setForgotPass] = useState({
@@ -7,8 +8,9 @@ const ForgotPassword = () => {
   });
   const { email } = forgotPass;
 
-  const [message, setMessage] = useState(""); // Correctly define setMessage
-  const navigate = useNavigate(); // Initialize useNavigate for navigation
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+
 
   const onChange = (e) => {
     setForgotPass({ ...forgotPass, [e.target.name]: e.target.value });
@@ -68,6 +70,7 @@ const ForgotPassword = () => {
           <button className="flex bg-red-600 text-white px-5 py-2 rounded-lg m-auto">
             Submit
           </button>
+          {message && <p className="mt-3 text-red-600">{message}</p>}
           <NavLink to="/login">
             <p className=" font-sans text-center mt-5 mb-2 text-red-600 text-base">
               Back To Login
