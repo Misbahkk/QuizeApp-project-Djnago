@@ -7,6 +7,7 @@ import About from "./components/Pages/About";
 import Help from "./components/Pages/Help";
 import Login from "./components/Pages/Login";
 import ForgotPassword from "./components/Pages/ForgotPassword";
+import ResetPassword from "./components/Pages/ResetPassword";
 // import "../App.css";
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </>
   );

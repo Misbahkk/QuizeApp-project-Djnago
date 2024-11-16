@@ -6,13 +6,41 @@ const ForgotPassword = () => {
     email: "",
   });
   const { email } = forgotPass;
+
+  const [message, setMessage] = useState(""); // Correctly define setMessage
+  const navigate = useNavigate(); // Initialize useNavigate for navigation
+
   const onChange = (e) => {
     setForgotPass({ ...forgotPass, [e.target.name]: e.target.value });
   };
-  const submitData = (e) => {
+
+
+
+
+ const submitData = async (e) => {
     e.preventDefault();
-    console.log(forgotPass);
+    try {
+      const response = await fetch("http://localhost:8000/api/request-reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage("OTP has been sent to your email!");
+        setTimeout(() => navigate("/reset-password"), 2000); // Redirect to reset page after 2 seconds
+      } else {
+        setMessage(data.error || "An error occurred. Please try again.");
+      }
+    } catch (error) {
+      setMessage("Failed to send OTP. Please try again later.");
+    }
   };
+
+
   return (
     <div className="w-full h-[88.5vh] bg-black">
       <div className=" flex flex-col w-fit items-center justify-center m-auto px-5 text-white bg-black pt-10">
