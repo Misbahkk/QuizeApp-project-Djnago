@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import "../App.css";
-
+import logo from "../Images/logo.png";
 const Navbar = () => {
   const location = useLocation();
   const isAuthPage =
@@ -9,9 +9,14 @@ const Navbar = () => {
     location.pathname === "/signup" ||
     location.pathname === "/forgotPassword";
   return (
-    <div className="nav-div bg-black text-white flex items-center justify-evenly text-center py-4">
-      <div className="text-3xl">Logo</div>
-      <nav className="flex gap-12 text-lg ml-20 font-medium">
+    <div
+      className=" bg-black text-white flex items-center 
+    justify-between text-center py-4"
+    >
+      <div className="text-3xl ml-12">
+        <img src={logo} alt="Logo" className="w-[120px]" />
+      </div>
+      <nav className="flex gap-12 text-lg ml-24 font-medium">
         <NavLink
           to="/"
           className={({ isActive }) =>
@@ -45,7 +50,7 @@ const Navbar = () => {
           Help
         </NavLink>
       </nav>
-      <div className="flex gap-5">
+      <div className="flex gap-5 mr-10">
         <i class="fa-solid fa-bell"></i>
         <i class="fa-solid fa-user"></i>
       </div>
