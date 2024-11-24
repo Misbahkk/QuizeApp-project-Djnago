@@ -51,8 +51,12 @@ const Navbar = () => {
         </NavLink>
       </nav>
       <div className="flex gap-5 mr-10">
-        <i class="fa-solid fa-bell"></i>
-        <i class="fa-solid fa-user"></i>
+        <NavLink>
+          <i class="fa-solid fa-bell"></i>
+        </NavLink>
+        <NavLink to="/dashboard">
+          <i class="fa-solid fa-user"></i>
+        </NavLink>
       </div>
     </div>
   );
