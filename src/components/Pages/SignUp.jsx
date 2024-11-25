@@ -11,23 +11,16 @@ const SignUp = () => {
   const onChange = (e) => {
     setSignUpdata({ ...signUpdata, [e.target.name]: e.target.value });
   };
-  // const submitData = (e) => {
-  //   e.preventDefault();
-  //   console.log(signUpdata);
-  // };
-
-
-
 
   const submitData = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data_user = {
-      name: formData.get('name'), 
-      email: formData.get('email'),  // Ensure this matches the backend
-      password: formData.get('password'),
-      role: formData.get('role'), 
-  };
+      name: formData.get("name"),
+      email: formData.get("email"), // Ensure this matches the backend
+      password: formData.get("password"),
+      role: formData.get("role"),
+    };
     try {
       const response = await fetch("http://127.0.0.1:8000/api/register", {
         method: "POST",
@@ -38,16 +31,17 @@ const SignUp = () => {
       });
       const data = await response.json();
       console.log("Signup Success:", data);
-      // Handle response data (e.g., redirect to login, show success message, etc.)
     } catch (error) {
       console.error("Error during signup:", error);
     }
   };
 
-
   return (
     <div className="w-full h-[88.5vh] bg-black">
-      <div className=" flex flex-col w-fit items-center justify-center m-auto px-5 text-white bg-black pt-10">
+      <div
+        className=" flex flex-col w-fit items-center justify-center m-auto px-5 text-white 
+      bg-black pt-10"
+      >
         <h1 className="text-3xl font-medium ">SIGN UP</h1>
         <p className="text-lg font-base font-sans mb-4">
           Sign in to your account and get started
