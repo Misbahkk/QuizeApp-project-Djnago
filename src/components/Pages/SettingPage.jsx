@@ -10,7 +10,7 @@ const SettingPage = () => {
         <Setting />
       </div>
       <div className="w-[85%] flex flex-col ">
-        <div className="h-[18%] bg-black text-white ">
+        <div className="h-[14%] bg-black text-white ">
           <Dashboard_heading_buttons
             heading={"My Settings"}
             button1={"Profile Settings"}
@@ -18,7 +18,7 @@ const SettingPage = () => {
             button3={"Prefrences"}
           />
         </div>
-        <div className="h-[70%] bg-white rounded-lg ">
+        <div className="h-[74%] bg-white rounded-lg ">
           <User_dashboard />
         </div>
       </div>
