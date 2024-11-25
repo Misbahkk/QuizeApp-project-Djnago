@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -29,6 +30,17 @@ const Login = () => {
       const data = await response.json();
       console.log("Login Success:", data);
       // Handle response data (e.g., save token, redirect user, etc.)
+      if (data.access){
+        localStorage.setItem("access",data.access)
+        localStorage.setItem("refresh",data.refresh)
+        localStorage.setItem("name", data.name); 
+        localStorage.setItem("email", data.email); 
+        alert("sucess full login")
+        navigate("/dashboard")
+      }
+      else{
+        alert("Invalid Login Credeentials.")
+      }
     } catch (error) {
       console.error("Error during login:", error);
     }

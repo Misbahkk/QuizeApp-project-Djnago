@@ -9,6 +9,7 @@ import Login from "./components/Pages/Login";
 import ForgotPassword from "./components/Pages/ForgotPassword";
 import ResetPassword from "./components/Pages/ResetPassword";
 import SettingPage from "./components/Pages/SettingPage";
+import PrivateRoute from "./components/PrivateRoute";
 // import "../App.css";
 const App = () => {
   return (
@@ -22,7 +23,15 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/dashboard" element={<SettingPage />} />
+        {/* <Route path="/dashboard" element={<SettingPage />} /> */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <SettingPage />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </>
   );

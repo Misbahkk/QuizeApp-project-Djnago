@@ -1,14 +1,16 @@
 import React from "react";
 
 const User_dashboard = () => {
+  const userName = localStorage.getItem("name") || "User";
+  const userEmail = localStorage.getItem("email") || "user@example.com"; 
   return (
     <>
       <div className="flex items-center justify-between">
         <div className="flex gap-5 ml-8 mt-4">
           <i class="fa-solid fa-user text-red-500 text-2xl"></i>
           <div className="ml-3">
-            <h1 className="text-xl">Misbah Yousaf</h1>
-            <p className="text-sm text-gray-400">misbah@gmail.com</p>
+            <h1 className="text-xl">{userName}</h1>
+            <p className="text-sm text-gray-400">{ userEmail }</p>
           </div>
         </div>
         <div>
